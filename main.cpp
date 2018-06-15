@@ -1,58 +1,34 @@
-#include <iostream>
-#include "GameBoard.h"
+#include <string>
+#include <utility>
 
-int main() {
-    GameBoard<2, 2, char> board;
-    PieceInfo<char> piece = board.getPiece(1, 1);
-    if(!piece)
-        cout << "Test 1 succeeded!" << endl;
-    else
-        cout << "Test 1 failed" << endl;
+#include "ex4_header.h"
+#include "unit_test_util.h"
 
-    piece = board.setPiece(1, 1, 'S', 0);
-    if(!piece)
-        cout << "Test 2 succeeded!" << endl;
-    else
-        cout << "Test 2 failed" << endl;
+using std::string;
+using std::get;
 
-   piece = board.getPiece(1, 1);
-    if(!piece)
-        cout << "Test 3 failed" << endl;
-    else
-        cout << "Test 3 - player: " << piece->first << " piece: " << piece->second << endl;
+static bool test1(){
+	GameBoard<12, 7, string, 4> board;
+	int i = 0;
+	for (int row = 0; row < 12; row++){
+		for(int col =0; col < 7; col++){
+			board.setPiece(row, col, "Piece", i);
+			i = (i+1)%4;
+		}
+	}
+	int occurence[4]= {0,0,0,0};
+	for(auto pieceInfo : board){
+		occurence[get<3>(pieceInfo)]++;
+	}
+	for(int i = 0;i<4;i++){
+		if (occurence[i] != 21){
+			return false;
+		}
+	}
+	return true;
+}
 
-    piece = board.setPiece(1, 2, 'S', 4);
-    if(!piece)
-        cout << "Test 4 succeeded!" << endl;
-    else
-        cout << "Test 4 failed" << endl;
-
-    piece = board.getPiece(1, 2);
-    if(!piece)
-        cout << "Test 5 succeeded!" << endl;
-    else
-        cout << "Test 5 failed" << endl;
-
-    piece = board.setPiece(2, 2, 'L', 1);
-    if(!piece)
-        cout << "Test 5 succeeded!" << endl;
-    else
-        cout << "Test 5 failed" << endl;
-
-    for(auto pieceInfo : board) {
-        cout << "row: " << std::get<0>(pieceInfo) << endl;
-        cout << "col: " << std::get<1>(pieceInfo) << endl;
-        cout << "piece: " << std::get<2>(pieceInfo) << endl; // we assume here that GAME_PIECE implemented <<
-        cout << "player: " << std::get<3>(pieceInfo) << endl;
-    }
-    cout << "**************************" << endl;
-    int playerNum = 1;
-    for(auto pieceInfo : board.allPiecesOfPlayer(playerNum)) {
-        cout << "row: " << std::get<0>(pieceInfo) << endl;
-        cout << "col: " << std::get<1>(pieceInfo) << endl;
-        cout << "piece: " << std::get<2>(pieceInfo) << endl; // we assume here that GAME_PIECE implemented <<
-        cout << "player: " << std::get<3>(pieceInfo) << endl;
-    }
-
-    return 0;
+int main(){
+	RUN_TEST(test1);
+	return 0;
 }
